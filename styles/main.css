@@ -196,22 +196,89 @@ body {
 
 .token.pulse { animation: pulse 0.5s ease; }
 
-/* 火：暖色微闪 */
-.token--fire { color: var(--fire); }
-.token--fire .token__face { animation: flicker 1.4s ease-in-out infinite; text-shadow: 0 0 10px rgba(200, 85, 61, 0.4); }
+/* 火：字本身熊熊燃烧（火焰渐变字 + 背后舔动的火苗 + 闪烁发光） */
+.token--fire { background: linear-gradient(#ffffff, #fff5ea); }
+.token--fire .token__face {
+  position: relative;
+  z-index: 1;
+  background: linear-gradient(0deg, #ffe066 0%, #ffb12e 36%, #ff6a1a 66%, #df3514 100%);
+  background-size: 100% 220%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  filter: drop-shadow(0 1px 5px rgba(255, 140, 40, .85)) drop-shadow(0 0 11px rgba(255, 80, 20, .5));
+  animation: fire-flow 1.5s linear infinite, fire-flicker .2s steps(2) infinite alternate;
+}
+.token--fire::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: 8px;
+  width: 42px;
+  height: 48px;
+  transform: translateX(-50%);
+  background: radial-gradient(50% 60% at 50% 72%, rgba(255, 212, 78, .95), rgba(255, 120, 20, .62) 55%, rgba(255, 80, 20, 0) 76%);
+  border-radius: 50% 50% 46% 46% / 62% 62% 40% 40%;
+  filter: blur(3px);
+  pointer-events: none;
+  animation: fire-lick .46s ease-in-out infinite alternate;
+}
 
-/* 邻近蓄能：进度写在 --charge，驱动“发热环 / 出汗” */
+/* 邻近蓄能：进度写在 --charge */
 .token { --charge: 0; }
-.token.heating { box-shadow: 0 0 0 calc(var(--charge) * 5px) rgba(200, 85, 61, 0.18), var(--shadow); }
+.token.heating { box-shadow: 0 0 0 calc(var(--charge) * 6px) rgba(255, 110, 30, .3), var(--shadow); }
 .token.reflecting { box-shadow: 0 0 0 calc(var(--charge) * 5px) rgba(120, 160, 200, 0.22), var(--shadow); }
 
-/* 冰：冷色；加热时逐渐“出汗” */
-.token--ice { color: var(--water); }
+/* 冰：冒着寒气；遇火逐渐融化（下塌 + 模糊 + 脚下积水） */
+.token--ice { color: #69b9da; }
 .token--ice .token__face {
-  filter: drop-shadow(0 0 calc(var(--charge) * 7px) rgba(120, 180, 210, 0.6));
-  opacity: calc(1 - var(--charge) * 0.3);
+  color: #69b9da;
+  text-shadow: 0 0 7px rgba(150, 215, 240, .7);
+  transform-origin: 50% 100%;
+  transform: scaleY(calc(1 - var(--charge) * 0.32));
+  filter: blur(calc(var(--charge) * 1.5px)) drop-shadow(0 0 calc(var(--charge) * 8px) rgba(120, 180, 210, .6));
+}
+.token--ice::before, .token--ice::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 46%;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(225, 244, 252, .85), rgba(225, 244, 252, 0) 70%);
+  filter: blur(2px);
+  pointer-events: none;
+  animation: cold-vapor 2.6s ease-in-out infinite;
+}
+.token--ice::after { left: 60%; animation-delay: 1.3s; }
+.token--ice.heating::before, .token--ice.heating::after { opacity: 0; } /* 开始融化就不再冒寒气 */
+.melt-puddle {
+  position: absolute;
+  left: 50%;
+  bottom: -5px;
+  width: 58px;
+  height: 14px;
+  transform: translateX(-50%) scaleX(calc(.25 + var(--charge) * .9));
+  background: radial-gradient(50% 60% at 50% 50%, rgba(79, 143, 176, .55), rgba(79, 143, 176, 0) 72%);
+  border-radius: 50%;
+  opacity: var(--charge);
+  pointer-events: none;
 }
 .token--water { color: var(--water); }
+
+@keyframes fire-flow { 0% { background-position: 50% 0%; } 100% { background-position: 50% 100%; } }
+@keyframes fire-flicker { from { opacity: 1; } to { opacity: .9; } }
+@keyframes fire-lick {
+  0%   { transform: translateX(-50%) scaleY(.86) skewX(-5deg); opacity: .8; }
+  100% { transform: translateX(-53%) scaleY(1.16) skewX(6deg); opacity: 1; }
+}
+@keyframes cold-vapor {
+  0%   { transform: translate(-50%, 0) scale(.5); opacity: 0; }
+  25%  { opacity: .75; }
+  100% { transform: translate(-62%, -36px) scale(1.6); opacity: 0; }
+}
 
 /* 蓄能进度环（火烤 / 弓影通用） */
 .charge-ring {
