@@ -38,9 +38,7 @@ export async function showLevel(root, id, nav) {
     el('button', { class: 'btn btn--ghost', onClick: () => { destroy(); showLevel(root, id, nav); } }, '重玩'),
   );
 
-  const tray = el('div', { class: 'tray', text: `素材：${meta.materials.join('　')}` });
-
-  const screen = el('div', { class: 'screen level-screen' }, header, promptEl, tray, stage.el);
+  const screen = el('div', { class: 'screen level-screen' }, header, promptEl, stage.el);
 
   stage.setHandlers({
     onAfterFill: () => {

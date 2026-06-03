@@ -6,7 +6,7 @@ import { Progress } from '../game/progress.js';
 export function showLevelSelect(root, { onPick }) {
   const screen = el('div', { class: 'screen select-screen' },
     el('header', { class: 'select-header' },
-      el('h1', { class: 'select-title', text: '你从来没玩过的完形填空' }),
+      el('h1', { class: 'select-title' }, '你从来没玩过的', el('br'), '完形填空'),
       el('p', { class: 'select-sub', text: '把桌上的东西，变成那个缺的字' }),
     ),
   );

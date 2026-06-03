@@ -64,7 +64,7 @@ body {
 /* ---------- 选关 ---------- */
 .select-screen { padding: 24px 18px 40px; overflow-y: auto; }
 .select-header { text-align: center; margin: 12px 0 22px; }
-.select-title { font-size: 30px; letter-spacing: 6px; margin: 0; }
+.select-title { font-size: 30px; letter-spacing: 6px; line-height: 1.32; margin: 0; }
 .select-sub { color: var(--ink-soft); margin: 8px 0 0; font-size: 14px; }
 
 .chapter { margin-bottom: 22px; }
