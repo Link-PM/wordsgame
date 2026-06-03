@@ -4,6 +4,7 @@ import { Token } from '../engine/token.js';
 import { Slot } from '../engine/slot.js';
 import { getLevel, loadLevel } from '../levels/registry.js';
 import { Progress } from '../game/progress.js';
+import { trackLevelClear } from '../game/analytics.js';
 
 // 单关界面：题面（含填空）+ 舞台。加载对应关卡模块并接管交互。
 export async function showLevel(root, id, nav) {
@@ -50,6 +51,7 @@ export async function showLevel(root, id, nav) {
     if (won) return;
     won = true;
     Progress.complete(id);
+    trackLevelClear(meta.id, meta.title); // 上报“通关”自定义事件（PV/UV 由 SDK 自动统计）
     const next = getLevel(id + 1);
     screen.append(
       el('div', { class: 'overlay' },
