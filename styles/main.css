@@ -470,6 +470,18 @@ body {
 }
 .split-half--l { clip-path: inset(0 50% 0 0); animation: split-l .42s ease-out forwards; }
 .split-half--r { clip-path: inset(0 0 0 50%); animation: split-r .42s ease-out forwards; }
+
+/* 撞击冲击波（第 16 关兔子撞树桩） + 飞奔残影 */
+.fx-shockwave {
+  width: 30px; height: 30px; border-radius: 50%;
+  border: 3px solid rgba(150, 110, 60, .7);
+  animation: fx-shockwave .5s ease-out forwards;
+}
+.token.dashing .token__face { transform: scaleX(1.35); filter: blur(1px); }
+@keyframes fx-shockwave {
+  from { opacity: .9; transform: translate(-50%,-50%) scale(.3); }
+  to   { opacity: 0; transform: translate(-50%,-50%) scale(5); }
+}
 @keyframes fx-slash {
   0%   { opacity: 0; transform: translate(-50%,-50%) rotate(9deg) scaleY(.35); }
   40%  { opacity: 1; }

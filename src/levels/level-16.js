@@ -1,7 +1,6 @@
-import { glideTo, poof, floatText, tokenCenter, shake, bump } from '../engine/effects.js';
+import { glideTo, poof, smoke, sparks, flash, floatText, tokenCenter, shake, shockwave } from '../engine/effects.js';
 
-// 第 16 关《动如脱兔》：把「树桩」摆好然后等待；过一会儿一只兔子飞奔撞上树桩，得到「兔」。
-// 这关不靠操作靠“等”——守株待兔。
+// 第 16 关《动如脱兔》：把「树桩」摆好然后等待；过一会儿一只兔子飞奔撞上树桩（夸张撞击），得到「兔」。
 export default {
   meta: { id: 16 },
 
@@ -25,13 +24,27 @@ export default {
     async function spawnRabbit() {
       if (arrived) return;
       arrived = true;
-      const rabbit = new Token({ value: '兔', x: W - 56, y: stump.y, className: 'token--beast' });
+      const rabbit = new Token({ value: '兔', x: W - 54, y: stump.y, className: 'token--beast' });
       stage.addToken(rabbit, { draggable: false });
-      await glideTo(rabbit, stump.x + 80, stump.y, 600);
+      rabbit.el.classList.add('dashing'); // 飞奔残影
+      await glideTo(rabbit, stump.x + 80, stump.y, 430); // 飞快冲过来
+      rabbit.el.classList.remove('dashing');
+
+      // 夸张撞击：闪光 + 冲击波 + 尘土 + 火花 + 双方猛抖
+      const sc = tokenCenter(stage, stump);
+      flash(stage, sc.x, sc.y);
+      shockwave(stage, sc.x, sc.y);
+      poof(stage, sc.x, sc.y, '#b9935f');
+      smoke(stage, sc.x, sc.y, 'rgba(185,150,110,.85)');
+      sparks(stage, sc.x, sc.y, '#fff');
       shake(stump);
-      bump(rabbit);
+      shake(rabbit);
+      floatText(stage, sc.x, sc.y - 42, '嘭！', 'warn');
+
+      // 兔子反弹一下再定住
+      await glideTo(rabbit, stump.x + 106, stump.y - 8, 110);
+      await glideTo(rabbit, stump.x + 84, stump.y, 150);
       const c = tokenCenter(stage, rabbit);
-      poof(stage, c.x, c.y, '#95613a');
       floatText(stage, c.x, c.y - 30, '撞上来了！', 'good');
       stage.enableDrag(rabbit);
     }

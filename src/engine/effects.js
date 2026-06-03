@@ -78,6 +78,11 @@ export function ripple(stage, x, y) {
   spawn(stage, 'fx fx-ripple', x, y, { animationDelay: '160ms' });
 }
 
+// 强冲击波：一圈快速扩散的大环（撞击、爆发）。
+export function shockwave(stage, x, y) {
+  spawn(stage, 'fx fx-shockwave', x, y);
+}
+
 // 一道竖直白光斩线（斧劈“一刀两断”）。
 export function slash(stage, x, y) {
   const node = el('div', { class: 'fx-slash' });
