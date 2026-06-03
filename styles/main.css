@@ -1,0 +1,377 @@
+:root {
+  --paper: #f3ece1;
+  --paper-2: #ece2d2;
+  --ink: #2b2622;
+  --ink-soft: #6f655b;
+  --line: #d8cbb6;
+  --fire: #c8553d;
+  --water: #4f8fb0;
+  --gold: #b8893b;
+  --ok: #5a8a5a;
+  --shadow: 0 6px 18px rgba(60, 44, 26, 0.16);
+  --tile: 64px;
+  font-family: "PingFang SC", "Microsoft YaHei", "Noto Sans SC", "Hiragino Sans GB", sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  background: var(--paper);
+  color: var(--ink);
+  overscroll-behavior: none;
+}
+
+body {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.app {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+.boot { padding: 40px; text-align: center; color: var(--ink-soft); }
+
+.screen {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+}
+
+/* ---------- 按钮 ---------- */
+.btn {
+  appearance: none;
+  border: 1px solid var(--line);
+  background: #fff;
+  color: var(--ink);
+  font: inherit;
+  font-size: 15px;
+  padding: 9px 16px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: transform 0.08s ease, box-shadow 0.12s ease;
+}
+.btn:active { transform: scale(0.96); }
+.btn--ghost { background: transparent; border-color: transparent; color: var(--ink-soft); }
+.btn--primary { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+
+/* ---------- 选关 ---------- */
+.select-screen { padding: 24px 18px 40px; overflow-y: auto; }
+.select-header { text-align: center; margin: 12px 0 22px; }
+.select-title { font-size: 30px; letter-spacing: 6px; margin: 0; }
+.select-sub { color: var(--ink-soft); margin: 8px 0 0; font-size: 14px; }
+
+.chapter { margin-bottom: 22px; }
+.chapter-title { font-size: 15px; color: var(--ink-soft); font-weight: 600; margin: 0 0 12px 4px; }
+
+.level-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  gap: 12px;
+}
+
+.level-card {
+  position: relative;
+  appearance: none;
+  border: 1px solid var(--line);
+  background: #fff;
+  border-radius: 16px;
+  padding: 14px 10px 10px;
+  cursor: pointer;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  box-shadow: var(--shadow);
+  transition: transform 0.08s ease;
+}
+.level-card:active { transform: scale(0.96); }
+.level-card.is-done { background: #f4f8f1; border-color: #cfe0c4; }
+.level-card.is-locked { opacity: 0.62; }
+
+.level-card__no { font-size: 13px; color: var(--ink-soft); }
+.level-card__name { font-size: 19px; font-weight: 600; letter-spacing: 1px; }
+.level-card__stars { font-size: 11px; color: var(--gold); letter-spacing: 1px; }
+.level-card__tag { font-size: 11px; color: var(--ink-soft); margin-top: 2px; }
+.level-card.is-done .level-card__tag { color: var(--ok); }
+
+.select-footer { text-align: center; margin-top: 10px; }
+
+/* ---------- 单关 ---------- */
+.level-screen { background: var(--paper); }
+
+.level-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 8px;
+  border-bottom: 1px solid var(--line);
+}
+.level-name { font-size: 15px; color: var(--ink-soft); }
+
+.prompt {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 2px;
+  padding: 26px 16px 18px;
+  font-size: 34px;
+  letter-spacing: 4px;
+}
+.prompt__char { font-weight: 500; }
+
+.slot {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 42px;
+  height: 48px;
+  margin: 0 4px;
+  border-bottom: 3px solid var(--fire);
+  color: var(--line);
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+.slot--filled {
+  color: var(--ink);
+  border-bottom-color: var(--ok);
+  animation: pop 0.32s ease;
+}
+
+.tray {
+  text-align: center;
+  color: var(--ink-soft);
+  font-size: 14px;
+  padding: 0 16px 6px;
+}
+
+.stage {
+  position: relative;
+  flex: 1;
+  margin: 8px;
+  border-radius: 18px;
+  background:
+    radial-gradient(120% 120% at 50% 0%, #fbf7ef 0%, var(--paper-2) 100%);
+  border: 1px solid var(--line);
+  overflow: visible;
+  touch-action: none;
+}
+
+/* ---------- token ---------- */
+.token {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: var(--tile);
+  height: var(--tile);
+  display: grid;
+  place-items: center;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  box-shadow: var(--shadow);
+  cursor: grab;
+  touch-action: none;
+  will-change: transform;
+}
+.token.dragging { cursor: grabbing; z-index: 1000; }
+.token--consumed { opacity: 0; pointer-events: none; }
+.token--locked { cursor: default; }
+
+.token__face {
+  grid-area: 1 / 1;
+  font-size: 38px;
+  line-height: 1;
+  transition: opacity 0.42s ease, filter 0.42s ease;
+}
+.token__face--enter { opacity: 0; }
+.token__face--leave { opacity: 0; }
+
+.token.pulse { animation: pulse 0.5s ease; }
+
+/* 火：暖色微闪 */
+.token--fire { color: var(--fire); }
+.token--fire .token__face { animation: flicker 1.4s ease-in-out infinite; text-shadow: 0 0 10px rgba(200, 85, 61, 0.4); }
+
+/* 邻近蓄能：进度写在 --charge，驱动“发热环 / 出汗” */
+.token { --charge: 0; }
+.token.heating { box-shadow: 0 0 0 calc(var(--charge) * 5px) rgba(200, 85, 61, 0.18), var(--shadow); }
+.token.reflecting { box-shadow: 0 0 0 calc(var(--charge) * 5px) rgba(120, 160, 200, 0.22), var(--shadow); }
+
+/* 冰：冷色；加热时逐渐“出汗” */
+.token--ice { color: var(--water); }
+.token--ice .token__face {
+  filter: drop-shadow(0 0 calc(var(--charge) * 7px) rgba(120, 180, 210, 0.6));
+  opacity: calc(1 - var(--charge) * 0.3);
+}
+.token--water { color: var(--water); }
+
+/* 蓄能进度环（火烤 / 弓影通用） */
+.charge-ring {
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  background: conic-gradient(var(--ring, var(--fire)) calc(var(--charge, 0) * 360deg), transparent 0);
+  -webkit-mask: radial-gradient(transparent 60%, #000 62%);
+  mask: radial-gradient(transparent 60%, #000 62%);
+  opacity: calc(var(--charge, 0) * 0.9);
+  pointer-events: none;
+}
+
+/* ───────── token 主题色 / 形态 ───────── */
+.grabbable { cursor: grab; }
+.token--word { width: auto; min-width: var(--tile); padding: 0 12px; }
+.token--word .token__face { font-size: 26px; letter-spacing: 1px; }
+.token--ash { color: #4a4441; }     /* 炭 */
+.token--metal { color: #6b7886; }   /* 针 / 铁杵 / 斧 */
+.token--plant { color: #4f8a52; }   /* 苗 / 木 / 林 / 森 / 草 / 种子 */
+.token--beast { color: #95613a; }   /* 虎 / 鹿 / 马 / 兔 / 牛 / 羊 / 蛇 / 鱼 */
+.token--auth { color: #9a3b3b; }    /* 赵高 / 指认（权势改名） */
+.token--prop { background: #faf6ee; border-style: dashed; cursor: default; box-shadow: none; }
+.token--sun { color: #d68a2e; }
+.token--sun .token__face { text-shadow: 0 0 12px rgba(214, 138, 46, 0.55); }
+.token.big .token__face { font-size: 46px; }
+.token.flowing .token__face { animation: flow 1.6s ease-in-out infinite; }
+
+/* ───────── 关卡布景 ───────── */
+.river-channel {
+  position: absolute;
+  width: 76px;
+  border: 2px dashed rgba(79, 143, 176, 0.55);
+  border-radius: 40px;
+  background: rgba(79, 143, 176, 0.08);
+  pointer-events: none;
+}
+.pool {
+  position: absolute;
+  left: 8px; right: 8px; bottom: 8px; height: 112px;
+  border-radius: 14px;
+  background: linear-gradient(180deg, rgba(79, 143, 176, 0.12), rgba(79, 143, 176, 0.24));
+  border: 1px solid rgba(79, 143, 176, 0.32);
+  overflow: hidden;
+  pointer-events: none;
+}
+.pool::before {
+  content: '水池'; position: absolute; top: 8px; left: 12px;
+  font-size: 12px; color: rgba(79, 143, 176, 0.7);
+}
+.pool__drop { position: absolute; bottom: 16px; font-size: 30px; color: rgba(79, 143, 176, 0.5); animation: flow 2.4s ease-in-out infinite; }
+
+/* 灶台 + 火（第 17 关） */
+.stove { position: absolute; width: 66px; height: 96px; pointer-events: none; }
+.stove::after {
+  content: ''; position: absolute; left: 6px; right: 6px; bottom: 0; height: 16px;
+  background: #b9a784; border-radius: 4px;
+}
+.flames {
+  position: absolute; left: 12px; right: 12px; bottom: 14px; height: 52px;
+  border-radius: 50% 50% 14px 14px;
+  background: radial-gradient(circle at 50% 92%, #ffd24d, #e8702a 55%, rgba(232,112,42,0) 74%);
+  filter: blur(1px); transform-origin: 50% 100%;
+  animation: flame 0.5s ease-in-out infinite alternate;
+}
+.flames.out { animation: none; opacity: 0; transition: opacity 0.5s ease; }
+
+/* 草被吹伏 / 蛇长腿（face 动画，不影响定位） */
+.token__face.swaying { animation: sway 0.9s ease-in-out 2; transform-origin: 50% 100%; }
+.token.has-legs .token__face { animation: wiggle 0.28s ease-in-out infinite; }
+
+@keyframes flame { from { transform: scaleY(0.92); } to { transform: scaleY(1.12) translateY(-3px); } }
+@keyframes sway { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(-13deg); } 75% { transform: rotate(13deg); } }
+@keyframes wiggle { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+
+/* ───────── 一次性特效 ───────── */
+.fx { position: absolute; pointer-events: none; transform: translate(-50%, -50%); }
+.fx-flash {
+  width: 72px; height: 72px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,255,255,0.95), rgba(255,255,255,0) 65%);
+  animation: fx-flash 0.45s ease-out forwards;
+}
+.fx-ring { width: 18px; height: 18px; border-radius: 50%; border: 3px solid var(--fx, var(--gold)); animation: fx-ring 0.5s ease-out forwards; }
+.fx-spark { width: 8px; height: 8px; border-radius: 50%; background: var(--fx, var(--gold)); animation: fx-spark 0.5s ease-out forwards; }
+.fx-spark--hot { width: 6px; height: 6px; box-shadow: 0 0 6px var(--fx, var(--fire)); animation-duration: 0.45s; }
+.fx-smoke { width: 20px; height: 20px; border-radius: 50%; background: var(--fx, rgba(180,180,180,0.7)); filter: blur(3px); animation: fx-smoke 0.9s ease-out forwards; }
+.fx-drip { width: 7px; height: 9px; background: var(--fx, var(--water)); border-radius: 0 50% 50% 50%; transform: translate(-50%,-50%) rotate(45deg); animation: drop 0.7s ease-in forwards; }
+.fx-ripple { width: 30px; height: 14px; border: 2px solid rgba(90,140,170,0.7); border-radius: 50%; animation: fx-ripple 0.8s ease-out forwards; }
+.fx-chip { position: absolute; pointer-events: none; transform: translate(-50%,-50%); font-size: 18px; color: #4f8a52; animation: fx-chip 0.7s ease-in forwards; }
+.fx-float {
+  position: absolute; pointer-events: none; transform: translate(-50%,-50%);
+  font-size: 18px; font-weight: 600; color: var(--ink); white-space: nowrap;
+  text-shadow: 0 1px 5px rgba(255,255,255,0.85); animation: fx-float 1.5s ease-out forwards;
+}
+.fx-float.warn { color: var(--fire); }
+.fx-float.good { color: var(--ok); }
+
+/* face 上的瞬时动画（不影响外层定位 transform） */
+.token__face.fx-shake { animation: shake 0.4s ease; }
+.token__face.fx-bump { animation: bump 0.42s ease; }
+.token__face.chop-swing { animation: chop 0.18s ease; }
+
+@keyframes fx-flash { from { opacity: 0.9; transform: translate(-50%,-50%) scale(0.4); } to { opacity: 0; transform: translate(-50%,-50%) scale(1.3); } }
+@keyframes fx-ring { from { opacity: 0.9; transform: translate(-50%,-50%) scale(0.3); } to { opacity: 0; transform: translate(-50%,-50%) scale(3.4); } }
+@keyframes fx-spark { from { opacity: 1; transform: translate(-50%,-50%); } to { opacity: 0; transform: translate(calc(-50% + var(--dx,0px)), calc(-50% + var(--dy,0px))); } }
+@keyframes fx-smoke { from { opacity: 0.7; transform: translate(-50%,-50%) scale(0.6); } to { opacity: 0; transform: translate(calc(-50% + var(--drift,0px)), -78px) scale(1.5); } }
+@keyframes fx-ripple { from { opacity: 0.8; transform: translate(-50%,-50%) scale(0.5); } to { opacity: 0; transform: translate(-50%,-50%) scale(2.2); } }
+@keyframes fx-chip { from { opacity: 1; transform: translate(-50%,-50%) rotate(0); } to { opacity: 0; transform: translate(calc(-50% + var(--dx,0px)), 60px) rotate(60deg); } }
+@keyframes fx-float { 0% { opacity: 0; transform: translate(-50%,-30%) scale(0.85); } 20% { opacity: 1; } 100% { opacity: 0; transform: translate(-50%,-170%) scale(1.05); } }
+@keyframes drop { 0% { transform: translate(-50%,-50%) rotate(45deg); opacity: 0.85; } 100% { transform: translate(-50%, 28px) rotate(45deg); opacity: 0; } }
+@keyframes shake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-6px)} 40%{transform:translateX(6px)} 60%{transform:translateX(-4px)} 80%{transform:translateX(4px)} }
+@keyframes bump { 0%{transform:scale(1)} 35%{transform:scale(1.24)} 100%{transform:scale(1)} }
+@keyframes chop { 0%{transform:rotate(0)} 50%{transform:rotate(30deg) translateY(5px)} 100%{transform:rotate(0)} }
+
+/* ---------- 占位（未实现的关卡） ---------- */
+.todo-note {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  padding: 24px;
+  text-align: center;
+  color: var(--ink-soft);
+}
+.todo-note__title { font-size: 16px; color: var(--ink); }
+.todo-note__line { font-size: 14px; max-width: 30ch; line-height: 1.6; }
+
+/* ---------- 过关 ---------- */
+.overlay {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgba(40, 32, 24, 0.34);
+  z-index: 2000;
+  animation: fade 0.2s ease;
+}
+.win-card {
+  background: var(--paper);
+  border-radius: 22px;
+  padding: 30px 34px;
+  text-align: center;
+  box-shadow: var(--shadow);
+  min-width: 240px;
+}
+.win-mark {
+  width: 56px; height: 56px; margin: 0 auto 10px;
+  display: grid; place-items: center;
+  border-radius: 50%; background: var(--ok); color: #fff; font-size: 30px;
+}
+.win-title { font-size: 22px; letter-spacing: 4px; }
+.win-idiom { color: var(--ink-soft); margin: 6px 0 20px; }
+.win-actions { display: flex; gap: 10px; justify-content: center; }
+
+/* ---------- 动画 ---------- */
+@keyframes pop { 0% { transform: scale(0.4); } 70% { transform: scale(1.18); } 100% { transform: scale(1); } }
+@keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes flicker { 0%, 100% { opacity: 1; } 50% { opacity: 0.78; } }
+@keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(79, 143, 176, 0.5), var(--shadow); } 100% { box-shadow: 0 0 0 18px rgba(79, 143, 176, 0), var(--shadow); } }
+@keyframes flow { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(3px); } }
