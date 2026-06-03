@@ -1,4 +1,5 @@
 import { makeRotatable } from '../engine/mechanics.js';
+import { el } from '../engine/dom.js';
 import { tokenCenter, poof, floatText, bump } from '../engine/effects.js';
 
 // 第 2 关《歪打正着》：抓住「正」往一边拧/扳斜，转过一定角度它就成了「歪」。
@@ -9,6 +10,15 @@ export default {
   init({ stage, Token }) {
     const zheng = new Token({ value: '正', x: 152, y: 250 });
     stage.addToken(zheng, { draggable: false });
+
+    // 诱导：弧形旋转箭头 + 字轻轻晃，暗示“可以拧/扳斜”，一上手就消失
+    const hint = el('div', { class: 'rotate-hint', text: '↻' });
+    zheng.el.append(hint);
+    zheng.face.classList.add('hint-wobble');
+    zheng.el.addEventListener('pointerdown', () => {
+      hint.remove();
+      zheng.face.classList.remove('hint-wobble');
+    }, { once: true });
 
     makeRotatable(zheng, {
       threshold: 42,

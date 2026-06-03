@@ -454,6 +454,36 @@ body {
 @keyframes bump { 0%{transform:scale(1)} 35%{transform:scale(1.24)} 100%{transform:scale(1)} }
 @keyframes chop { 0%{transform:rotate(0)} 50%{transform:rotate(30deg) translateY(5px)} 100%{transform:rotate(0)} }
 
+/* 斧劈“一刀两断”：竖直斩线 + 字从中间裂成两半弹开 */
+.fx-slash {
+  position: absolute; pointer-events: none;
+  width: 5px; height: 96px;
+  transform: translate(-50%, -50%) rotate(9deg);
+  background: linear-gradient(rgba(255,255,255,0), #fff 45%, #fff 55%, rgba(255,255,255,0));
+  filter: blur(.6px) drop-shadow(0 0 6px rgba(255,255,255,.9));
+  animation: fx-slash .26s ease-out forwards;
+}
+.split-half {
+  position: absolute; pointer-events: none;
+  transform: translate(-50%, -50%);
+  font-size: 38px; line-height: 1; color: #4f8a52;
+}
+.split-half--l { clip-path: inset(0 50% 0 0); animation: split-l .42s ease-out forwards; }
+.split-half--r { clip-path: inset(0 0 0 50%); animation: split-r .42s ease-out forwards; }
+@keyframes fx-slash {
+  0%   { opacity: 0; transform: translate(-50%,-50%) rotate(9deg) scaleY(.35); }
+  40%  { opacity: 1; }
+  100% { opacity: 0; transform: translate(-50%,-50%) rotate(9deg) scaleY(1.25); }
+}
+@keyframes split-l {
+  0%   { opacity: 1; transform: translate(-50%,-50%) rotate(0); }
+  100% { opacity: 0; transform: translate(calc(-50% - 40px), -45%) rotate(-20deg); }
+}
+@keyframes split-r {
+  0%   { opacity: 1; transform: translate(-50%,-50%) rotate(0); }
+  100% { opacity: 0; transform: translate(calc(-50% + 40px), -45%) rotate(20deg); }
+}
+
 /* ---------- 占位（未实现的关卡） ---------- */
 .todo-note {
   position: absolute;
@@ -503,3 +533,18 @@ body {
 @keyframes flicker { 0%, 100% { opacity: 1; } 50% { opacity: 0.78; } }
 @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(79, 143, 176, 0.5), var(--shadow); } 100% { box-shadow: 0 0 0 18px rgba(79, 143, 176, 0), var(--shadow); } }
 @keyframes flow { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(3px); } }
+
+/* 第 2/3 关：交互诱导 + 实时 3D 翻面 */
+.token.flip3d { perspective: 340px; }
+.rotate-hint, .flip-hint {
+  position: absolute; left: 50%; top: -30px;
+  transform: translateX(-50%);
+  font-size: 22px; line-height: 1; color: var(--ink-soft);
+  pointer-events: none;
+  animation: hint-pulse 1.3s ease-in-out infinite;
+}
+.token__face.hint-wobble { animation: hint-wobble 1.4s ease-in-out infinite; transform-origin: 50% 80%; }
+.token__face.hint-flip { animation: hint-flip 1.7s ease-in-out infinite; }
+@keyframes hint-pulse { 0%, 100% { opacity: .3; } 50% { opacity: .7; } }
+@keyframes hint-wobble { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(-9deg); } 75% { transform: rotate(9deg); } }
+@keyframes hint-flip { 0%, 100% { transform: rotateX(0); } 50% { transform: rotateX(28deg); } }

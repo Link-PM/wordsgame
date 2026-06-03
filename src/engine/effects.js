@@ -78,6 +78,15 @@ export function ripple(stage, x, y) {
   spawn(stage, 'fx fx-ripple', x, y, { animationDelay: '160ms' });
 }
 
+// 一道竖直白光斩线（斧劈“一刀两断”）。
+export function slash(stage, x, y) {
+  const node = el('div', { class: 'fx-slash' });
+  node.style.left = `${x}px`;
+  node.style.top = `${y}px`;
+  stage.el.append(node);
+  node.addEventListener('animationend', () => node.remove(), { once: true });
+}
+
 // 一句从某处飘起淡出的文字（成语梗 / 提示反馈）。
 export function floatText(stage, x, y, text, kind = '') {
   const node = el('div', { class: `fx-float ${kind}`.trim(), text });
