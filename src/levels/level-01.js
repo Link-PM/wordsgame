@@ -3,7 +3,7 @@ import { proximityCharge } from '../engine/mechanics.js';
 import { drip, smoke, sparks, flash, ripple, poof, tokenCenter } from '../engine/effects.js';
 
 // 第 1 关《水能载舟》：火烤冰 → 冰下塌出汗、接触处滋滋冒汽、滴水 → 蓄满变「水」→ 拖入填空。
-// 火字本身熊熊燃烧、冰冒寒气（见 CSS）；这里负责“相遇”时更强烈的融化粒子特效。
+// 火熊熊燃烧、冰冒寒气（CSS）+ 不断窜出方框的火星 / 寒气（JS 在舞台层生成，不被方框裁剪）。
 export default {
   meta: { id: 1 },
 
@@ -15,6 +15,20 @@ export default {
 
     stage.addToken(fire);
     stage.addToken(ice);
+
+    // 从 token 顶部往上飘的粒子（火星 / 寒气），生成在舞台层，能窜出方框。
+    function emit(token, cls, spread) {
+      const r = token.el.getBoundingClientRect();
+      const sr = stage.el.getBoundingClientRect();
+      const node = el('div', { class: cls });
+      node.style.left = `${r.left - sr.left + r.width / 2}px`;
+      node.style.top = `${r.top - sr.top + 6}px`;
+      node.style.setProperty('--dx', `${(Math.random() - 0.5) * spread}px`);
+      stage.el.append(node);
+      node.addEventListener('animationend', () => node.remove(), { once: true });
+    }
+    const emberTimer = setInterval(() => emit(fire, 'fx-ember', 30), 170);
+    const vaporTimer = setInterval(() => { if (ice.value !== '水') emit(ice, 'fx-vaporpuff', 24); }, 300);
 
     // 冰朝着火的那一侧 = 滋滋融化的接触点
     function contact() {
@@ -35,14 +49,13 @@ export default {
       onProgress: (p, { near, frame }) => {
         if (!near) return;
         const { x, y, ic } = contact();
-        if (frame % 6 === 0) drip(stage, ic.x + (Math.random() - 0.5) * 42, ic.y + 22);   // 融水下滴
-        if (frame % 18 === 0) smoke(stage, x, y, 'rgba(228,244,252,.9)');                 // 接触处滋滋冒汽
-        if (frame % 14 === 0) sparks(stage, x, y, '#fff1c0');                             // 白热小火花
+        if (frame % 6 === 0) drip(stage, ic.x + (Math.random() - 0.5) * 42, ic.y + 22);
+        if (frame % 18 === 0) smoke(stage, x, y, 'rgba(228,244,252,.9)');
+        if (frame % 14 === 0) sparks(stage, x, y, '#fff1c0');
       },
       onComplete: async () => {
         const c = tokenCenter(stage, ice);
         ice.el.querySelector('.charge-ring')?.remove();
-        // 融化爆发：闪光 + 蒸汽 + 一圈水花 + 水波
         flash(stage, c.x, c.y);
         smoke(stage, c.x, c.y - 6, 'rgba(228,244,252,.95)');
         for (let i = 0; i < 7; i++) drip(stage, c.x + (Math.random() - 0.5) * 56, c.y + 8);
@@ -56,6 +69,12 @@ export default {
       },
     });
 
-    return { destroy() { charger.destroy(); } };
+    return {
+      destroy() {
+        charger.destroy();
+        clearInterval(emberTimer);
+        clearInterval(vaporTimer);
+      },
+    };
   },
 };
